@@ -8,6 +8,11 @@
             <label>Webhook URL</label>
             <type>text</type>
         </input>
+        <text><![CDATA[
+          In order to obtain the Webhook URL you have to create a new
+          incoming webhook integration for you Slack instance.
+          See <a href="https://api.slack.com/incoming-webhooks">Incoming Webhooks Docs</a> for details.
+        ]]></text>
     </block>
 
 </setup>
