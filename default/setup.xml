@@ -1,0 +1,13 @@
+<setup>
+    <block title="Slack Alert Action">
+        <text>Configure the Slack API </text>
+    </block>
+
+    <block title="Server" endpoint="admin/alert_actions" entity="slack">
+        <input field="param.webhook_url">
+            <label>Webhook URL</label>
+            <type>text</type>
+        </input>
+    </block>
+
+</setup>
