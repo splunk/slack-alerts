@@ -10,8 +10,8 @@ def decode_all_urls(messagestring):
     return re.sub(urlre, decode_all_matching_urls, messagestring)
 
 def decode_all_matching_urls(match):
-        match = match.group()
-        return url_decode(match)
+    match = match.group()
+    return url_decode(match)
 
 def send_slack_message(settings):
     params = dict()
