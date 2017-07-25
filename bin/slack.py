@@ -1,11 +1,27 @@
 import sys, json
 import urllib2
+import re
+
+def url_decode(urlstring):
+    return urllib2.unquote(urlstring).decode('utf8')
+
+def decode_all_urls(messagestring):
+    urlre = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    return re.sub(urlre, decode_all_matching_urls, messagestring)
+
+def decode_all_matching_urls(match):
+    match = match.group()
+    return url_decode(match)
 
 def send_slack_message(settings):
     params = dict()
-    params['text'] = settings.get('message')
+
+    # Decode the results link since it was already encoded; otherwise, it will be double encoded
+    params['text'] = decode_all_urls(settings.get('message'))
+
     params['username'] = settings.get('from_user', 'Splunk')
     params['icon_url'] = settings.get('from_user_icon')
+
     channel = settings.get('channel')
     if channel:
         params['channel'] = channel
