@@ -9,11 +9,13 @@
   "author": "Siegfried Puchbauer <spuchbauer@splunk.com>",
   "license": "MIT",
   "devDependencies": {
+    "onchange": "^3.2.1",
     "splunk-slap": "^0.0.5"
   },
   "scripts": {
     "build": "slap stage",
     "symlink": "slap symlink",
-    "package": "slap package"
+    "package": "slap package",
+    "watch": "yarn build && onchange src/main/resources/splunk/** -- slap stage"
   }
 }

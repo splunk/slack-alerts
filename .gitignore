@@ -4,3 +4,4 @@ dist/*
 stage/*
 .idea
 node_modules
+.vscode
