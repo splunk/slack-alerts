@@ -28,6 +28,9 @@ def send_slack_message(settings):
     else:
         print >> sys.stderr, "WARN No channel supplied, using default for webhook"
     url = settings.get('webhook_url')
+    if not url.startswith('https:'):
+        print >> sys.stderr, "FATAL Invalid webhook URL specified. The URL must use HTTPS."
+        return False
     body = json.dumps(params)
     print >> sys.stderr, 'DEBUG Calling url="%s" with body=%s' % (url, body)
     req = urllib2.Request(url, body, {"Content-Type": "application/json"})
@@ -48,3 +51,4 @@ if __name__ == '__main__':
         config = payload.get('configuration')
         if not send_slack_message(config):
             print >> sys.stderr, "FATAL Sending the slack message failed"
+            sys.exit(5)
