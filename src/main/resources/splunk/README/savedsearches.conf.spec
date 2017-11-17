@@ -19,3 +19,7 @@ action.slack.param.fields = <csv-list>
 * List of fields in include with the slack message.
 * It is possible to use wildcards, such as "*" for all fields or "foo*" for 
 * prefixed fields, etc.
+
+action.slack.param.webhook_url_override = <string>
+* Override the Slack webhook URL for a single alert. This useful when wanting
+* to send some alerts to different Slack teams.
