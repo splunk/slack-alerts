@@ -10,3 +10,19 @@ param.from_user = <string>
 param.from_user_icon = <string>
 * URL to an icon to show as the avatar for the Slack message. By default this is
 * a Splunk icon.
+
+param.attachment = [ none | alert_link ]
+* Include an attachment with the slack message.
+* - none: Show no attachment
+* - alert_link: Show the alert title linking to the result
+* Defaults to "none"
+
+param.fields = <csv-list>
+* List of fields in include with the slack message.
+* It is possible to use wildcards, such as "*" for all fields or "foo*" for 
+* prefixed fields, etc.
+
+# Internal parameters
+param.view_link = <string>
+param.info_trigger_time = <string>
+param.info_severity = <string>

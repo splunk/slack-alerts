@@ -8,3 +8,14 @@ action.slack.param.channel = <string>
 action.slack.param.message = <string>
 * The message text to send. See Slack API documentation for incoming webhooks
 * in order to find out what's possible.
+
+action.slack.param.attachment = [ none | alert_link ]
+* Include an attachment with the slack message.
+* - none: Show no attachment
+* - alert_link: Show the alert title linking to the result
+* Defaults to "none"
+
+action.slack.param.fields = <csv-list>
+* List of fields in include with the slack message.
+* It is possible to use wildcards, such as "*" for all fields or "foo*" for 
+* prefixed fields, etc.

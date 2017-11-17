@@ -20,4 +20,25 @@
             </span>
         </div>
     </div>
+    <div class="control-group">
+        <label class="control-label">Attachment</label>
+        <div class="controls">            
+            <select name="action.slack.param.attachment">
+                <option value="none">None</option>
+                <option value="alert_link">Link to alert</option>
+            </select>
+            <span class="help-block">
+                    Optionally include an attachment with the slack message
+            </span>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="slack_fields">Fields</label>
+
+        <div class="controls">
+            <input type="text" name="action.slack.param.fields" id="slack_fields" />
+            <span class="help-block">Include one or more comma-separated fields with your slack message. You can use wildcards such as <code>*</code></span>            
+        </div>
+    </div>
+    <br clear="all" />
 </form>
