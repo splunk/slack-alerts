@@ -136,9 +136,8 @@ def validate_payload(payload):
         return False
 
     att = config.get('attachment')
-    if att and att not in ('alert_info', 'message'):
-        print >> sys.stderr, "FATAL Validation error: Parameter `attachment` must be ether \"alert_info\" or \"message\""
-        return False
+    if att and att not in ('alert_link', 'message'):
+        print >> sys.stderr, "WARN Validation warning: Parameter `attachment` must be ether \"alert_link\" or \"message\""
 
     return True
 
