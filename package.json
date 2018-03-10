@@ -1,6 +1,6 @@
 {
   "name": "splunk-slack-alerts",
-  "version": "2.0.0-beta2",
+  "version": "2.0.0",
   "description": "Slack alert action for Splunk Enterprise",
   "splunk": {
     "appName": "slack_alerts"
