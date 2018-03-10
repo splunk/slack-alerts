@@ -12,7 +12,7 @@
         <label class="control-label" for="slack_message">Message</label>
 
         <div class="controls">
-            <textarea name="action.slack.param.message" id="slack_message" style="height: 120px;"></textarea>
+            <textarea name="action.slack.param.message" id="slack_message" style="height: 140px;"></textarea>
             <span class="help-block">
                 Enter the chat message to send to the Slack channel.
                 The message can include tokens that insert text based on the results of the search.
@@ -40,7 +40,7 @@
 
         <div class="controls">
             <input type="text" name="action.slack.param.fields" id="slack_fields" placeholder="Optional" />
-            <span class="help-block">Show one or more comma-separated fields from the search results with your Slack message. You can use wildcards such as <code>*</code></span>            
+            <span class="help-block">Show one or more fields from the search results below your Slack message. Comma-separated list of field names. Allows wildcards. eg. <code>index,source*</code>.</span>            
         </div>
     </div>
     <br clear="both" />

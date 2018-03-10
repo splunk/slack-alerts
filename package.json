@@ -13,10 +13,13 @@
     "splunk-slap": "^0.0.5"
   },
   "scripts": {
+    "setup": "yarn install && yarn build && yarn symlink",
     "build": "slap stage",
     "symlink": "slap symlink",
     "package": "slap package --prod",
+    "pkg": "yarn package",
     "rebuild": "echo \"Rebuilding...\" && slap stage --skip-clean",
-    "start": "yarn build && onchange src/main/resources/splunk/** -- slap stage"
+    "start": "yarn build && onchange src/main/resources/splunk/** -- slap stage",
+    "test": "python src/main/resources/splunk/bin/test_slack.py"
   }
 }

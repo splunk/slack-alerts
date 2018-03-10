@@ -5,3 +5,5 @@ stage/*
 .idea
 node_modules
 .vscode
+*.pyc
+*.pyo
