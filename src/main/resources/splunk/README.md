@@ -56,7 +56,9 @@ Enter a simlar SPL query into the search bar in the search interface of Splunk t
 
 ### Error Codes
 
-In case of an error when manually triggering the Slack alert action, you'll notice an error code being returned. Here are the possible error codes returned by the slack alert action:
+In case of an error when manually triggering the Slack alert action, you'll notice an error code being returned (eg. `Alert script returned error code 6.`)
+
+Here are the possible error codes returned by the slack alert action:
 
 *   Error Code **`2`**: Validation Failed
 
