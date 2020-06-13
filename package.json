@@ -9,7 +9,8 @@
   "author": "Siegfried Puchbauer <spuchbauer@splunk.com>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "onchange": "^3.2.1"
+    "onchange": "^3.2.1",
+    "splunk-slap": "^0.0.6"
   },
   "scripts": {
     "setup": "yarn install && yarn build && yarn symlink",
