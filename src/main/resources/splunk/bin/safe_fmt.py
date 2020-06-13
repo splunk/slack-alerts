@@ -35,8 +35,8 @@ class SafeFormatter(Formatter):
         try:
             first, rest = formatter_field_name_split(field_name)
             obj = self.get_value(first, args, kwargs)
-            for is_attr, i in rest:
-                if type(i) == int:
+            for _, i in rest:
+                if isinstance(i, int):
                     obj = obj[str(i)]
                 else:
                     obj = obj[i]
@@ -45,8 +45,7 @@ class SafeFormatter(Formatter):
             return '{%s}' % field_name, first
 
     def format_field(self, value, spec):
-        t = type(value)
-        if t == dict or t == list:
+        if isinstance(value, dict) or isinstance(value, list):
             return json.dumps(value)
         return Formatter.format_field(self, value, spec)
 
