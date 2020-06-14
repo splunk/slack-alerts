@@ -1,21 +1,15 @@
-name: Python Unit Tests
+name: CI
 
-on: pull_request
+on: push
 
 jobs:
     tests:
         runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                python: [2.x, 3.x]
         steps:
             - uses: actions/checkout@v2
             - uses: actions/setup-node@v1
               with:
                   node-version: 12.x
-            - uses: actions/setup-python@v1
-              with:
-                  python-version: ${{ matrix.python }}
             - uses: actions/cache@v1
               with:
                   path: node_modules
@@ -26,7 +20,11 @@ jobs:
               run: yarn install --frozen-lockfile
               env:
                   CI: true
-            - name: Run tests
+            - name: Build app package
               run: |
-                  python --version
-                  yarn test
+                  yarn package
+                  mv dist/*.spl dist/slack-alerts.spl
+            - uses: actions/upload-artifact@v1
+              with:
+                  name: app-package
+                  path: dist/slack-alerts.spl

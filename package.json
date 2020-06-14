@@ -2,6 +2,7 @@
   "name": "splunk-slack-alerts",
   "version": "2.1.0",
   "description": "Slack alert action for Splunk Enterprise",
+  "private": true,
   "splunk": {
     "appName": "slack_alerts"
   },
@@ -21,7 +22,6 @@
     "rebuild": "echo \"Rebuilding...\" && slap stage --skip-clean",
     "start": "yarn build && onchange src/main/resources/splunk/** -- slap stage",
     "test": "python -m unittest discover -s src/main/resources/splunk/bin -p '*_tests.py' -v",
-    "test3": "python3 -m unittest discover -s src/main/resources/splunk/bin -p '*_tests.py' -v",
     "test:watch": "onchange src/main/resources/splunk/bin/** -- yarn test"
   }
 }
