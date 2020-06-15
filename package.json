@@ -4,7 +4,8 @@
   "description": "Slack alert action for Splunk Enterprise",
   "private": true,
   "splunk": {
-    "appName": "slack_alerts"
+    "appName": "slack_alerts",
+    "appSource": "src/app"
   },
   "repository": "git@github.com:ziegfried/splunk-slack-alerts.git",
   "author": "Siegfried Puchbauer <spuchbauer@splunk.com>",
