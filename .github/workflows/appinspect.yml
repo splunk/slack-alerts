@@ -1,9 +1,13 @@
-name: CI
+name: App Inspect
 
-on: push
+on:
+    pull_request:
+    push:
+        branches:
+            - master
 
 jobs:
-    tests:
+    appinspect:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
@@ -28,3 +32,8 @@ jobs:
               with:
                   name: app-package
                   path: dist/slack-alerts.spl
+            - uses: ./.github/actions/appinspect
+              with:
+                  filePath: ./dist/slack-alerts.spl
+                  splunkUser: ${{ secrets.SPLUNKBASE_USER }}
+                  splunkPassword: ${{ secrets.SPLUNKBASE_PASSWORD }}
