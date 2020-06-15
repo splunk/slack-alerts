@@ -1,0 +1,10 @@
+local/*
+tmp/*
+dist/*
+.idea
+node_modules
+.vscode
+*.pyc
+*.pyo
+__pycache__
+.DS_Store

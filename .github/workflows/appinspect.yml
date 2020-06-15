@@ -1,0 +1,39 @@
+name: App Inspect
+
+on:
+    pull_request:
+    push:
+        branches:
+            - master
+
+jobs:
+    appinspect:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+              with:
+                  node-version: 12.x
+            - uses: actions/cache@v1
+              with:
+                  path: node_modules
+                  key: nodeModules-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      nodeModules-
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+              env:
+                  CI: true
+            - name: Build app package
+              run: |
+                  yarn package
+                  mv dist/*.spl dist/slack-alerts.spl
+            - uses: actions/upload-artifact@v1
+              with:
+                  name: app-package
+                  path: dist/slack-alerts.spl
+            - uses: ./.github/actions/appinspect
+              with:
+                  filePath: ./dist/slack-alerts.spl
+                  splunkUser: ${{ secrets.SPLUNKBASE_USER }}
+                  splunkPassword: ${{ secrets.SPLUNKBASE_PASSWORD }}

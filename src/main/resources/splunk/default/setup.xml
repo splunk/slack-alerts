@@ -1,30 +1,41 @@
 <setup>
-    <block title="Slack Alert Action">
-        <text>Configure the Slack API </text>
-    </block>
-
-    <block title="Server" endpoint="admin/alert_actions" entity="slack">
+    <block title="Slack Incoming Webhook" endpoint="admin/alert_actions" entity="slack">
+        <text>
+            <![CDATA[
+            <div style="padding: 0 20px 20px 20px; color: #6b7785; font-size: 14px; line-height: 130%;">
+            This alert action uses Slack's
+            <a href="https://slack.com/apps/A0F7XDUAZ-incoming-webhooks" target="_blank">Incoming Webhooks</a>
+            to post messages from Splunk into Slack channels. You can set a default webhook URL here, which will be used
+            for all alerts be default. Each alert can override and use a different webhook URL that has different permissions 
+            or can send to a different Slack workspace.
+            </div>
+            ]]>
+        </text>
         <input field="param.webhook_url">
             <label>Webhook URL</label>
             <type>text</type>
         </input>
-        <text><![CDATA[
-          In order to obtain the Webhook URL you have to create a new
-          incoming webhook integration for you Slack instance.
-          See <a href="https://api.slack.com/incoming-webhooks">Incoming Webhooks Docs</a> for details.
-        ]]></text>
-
+        <text>
+            <![CDATA[
+                <div style="padding: 5px 0 10px 250px; color: #6b7785; font-size: 12px;">
+                    <a href="https://slack.com/apps/A0F7XDUAZ-incoming-webhooks" target="_blank">
+                        Configure Slack incoming webhook
+                    </a>
+                    (opens in new window)
+                </div>
+            ]]>
+        </text>
+    </block>
+    <block title="Message Appearance" endpoint="admin/alert_actions" entity="slack">
         <input field="param.from_user">
             <label>Sender Name</label>
             <type>text</type>
         </input>
-        <text>This name will appear in slack as the user sending the message</text>
-
+        <text><![CDATA[<div style="padding: 5px 0 10px 250px; color: #6b7785; font-size: 12px;">This name will appear in slack as the user sending the message.</div>]]></text>
         <input field="param.from_user_icon">
             <label>Sender Icon</label>
             <type>text</type>
         </input>
-        <text>The avatar/icon shown by the sender of the slack message. This URL needs to be accessible from the internet.</text>
+        <text><![CDATA[<div style="padding: 5px 0 10px 250px; color: #6b7785; font-size: 12px;">The avatar/icon shown by the sender of the slack message. This URL needs to be accessible from the internet.</div>]]></text>
     </block>
-
 </setup>

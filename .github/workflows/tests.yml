@@ -1,0 +1,32 @@
+name: Python Unit Tests
+
+on: pull_request
+
+jobs:
+    tests:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                python: [2.x, 3.x]
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+              with:
+                  node-version: 12.x
+            - uses: actions/setup-python@v1
+              with:
+                  python-version: ${{ matrix.python }}
+            - uses: actions/cache@v1
+              with:
+                  path: node_modules
+                  key: nodeModules-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      nodeModules-
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+              env:
+                  CI: true
+            - name: Run tests
+              run: |
+                  python --version
+                  yarn test

@@ -1,11 +1,13 @@
-import sys
 import json
-import urllib2
 import re
+import sys
 import time
+import traceback
 from copy import deepcopy
 from fnmatch import fnmatch
 from safe_fmt import safe_format
+from six import ensure_binary
+from six.moves import urllib
 
 SEVERITY_COLORS = ['#555555','#6DB7C6','#65A637','#F7BC38','#F58F39','#D93F3C']
 
@@ -17,9 +19,12 @@ ERROR_CODE_FORBIDDEN = 4
 ERROR_CODE_HTTP_FAIL = 5
 ERROR_CODE_UNEXPECTED = 6
 
+def log(msg, *args):
+    sys.stderr.write(msg + " ".join([str(a) for a in args]) + "\n")
+
 def build_fields_attachment(payload):
     res = payload.get('result', dict())
-    available_fields = res.keys()
+    available_fields = list(res.keys())
     field_attachments = []
     seen_fields = set()
     field_list = re.split(r'\s*,\s*', payload['configuration'].get('fields', '').strip())
@@ -28,7 +33,7 @@ def build_fields_attachment(payload):
             if af not in seen_fields and fnmatch(af, f):
                 seen_fields.add(af)
                 val = res[af]
-                if type(val) == list:
+                if isinstance(val, list):
                     val = val[0]
                 field_attachments.append(dict(title=af, value=val, short=True))
     return field_attachments
@@ -44,7 +49,7 @@ def format_template(template_key, payload, fallback=''):
             args['configuration']['webhook_url_override'] = '****'
             return safe_format(template, args)
         except:
-            print >> sys.stderr, "WARN Failed to format template %s \"%s\" -" % (template_key, template), sys.exc_info()[1]
+            log("WARN Failed to format template %s \"%s\" -" % (template_key, template), sys.exc_info()[1])
     return fallback
 
 def build_alert_attachment(payload):
@@ -84,7 +89,7 @@ def build_slack_message(payload):
     if channel:
         params['channel'] = channel
     else:
-        print >> sys.stderr, "WARN No channel supplied, using default for webhook"
+        log("WARN No channel supplied, using default for webhook")
 
     if config.get('attachment', 'none') != 'none':
         params['attachments'] = [build_alert_attachment(payload)]
@@ -98,33 +103,33 @@ def send_slack_message(payload):
         url = config.get('webhook_url', '')
         if config.get('webhook_url_override'):
             url = config.get('webhook_url_override', '')
-            print >> sys.stderr, "INFO Using webhook URL from webhook_url_override: %s" % url
+            log("INFO Using webhook URL from webhook_url_override: %s" % url)
         elif not url:
-            print >> sys.stderr, "FATAL No webhook URL configured and no override specified"
+            log("FATAL No webhook URL configured and no override specified")
             return ERROR_CODE_VALIDATION_FAILED
         else:
-            print >> sys.stderr, "INFO Using configured webhook URL: %s" % url
+            log("INFO Using configured webhook URL: %s" % url)
 
         if not url.startswith('https:'):
-            print >> sys.stderr, "FATAL Invalid webhook URL specified. The URL must use HTTPS."
+            log("FATAL Invalid webhook URL specified. The URL must use HTTPS.")
             return ERROR_CODE_VALIDATION_FAILED
 
         body = json.dumps(build_slack_message(payload))
 
-        print >> sys.stderr, 'DEBUG Calling url="%s" with body=%s' % (url, body)
-        req = urllib2.Request(url, body, {"Content-Type": "application/json"})
+        log('DEBUG Calling url="%s" with body=%s' % (url, body))
+        req = urllib.request.Request(url, ensure_binary(body), {"Content-Type": "application/json"})
         try:
-            res = urllib2.urlopen(req)
+            res = urllib.request.urlopen(req)
             body = res.read()
-            print >> sys.stderr, "INFO Slack API responded with HTTP status=%d" % res.code
-            print >> sys.stderr, "DEBUG Slack API response: %s" % json.dumps(body)
+            log("INFO Slack API responded with HTTP status=%d" % res.code)
+            log("DEBUG Slack API response: %s" % body)
             if 200 <= res.code < 300:
                 return OK
-        except urllib2.HTTPError, e:
-            print >> sys.stderr, "ERROR HTTP request to Slack webhook URL failed: %s" % e
+        except urllib.error.HTTPError as e:
+            log("ERROR HTTP request to Slack webhook URL failed: %s" % e)
             try:
                 res = e.read()
-                print >> sys.stderr, "ERROR Slack error response: %s" % res
+                log("ERROR Slack error response: %s" % res)
                 if res in ('channel_not_found', 'channel_is_archived'):
                     return ERROR_CODE_CHANNEL_NOT_FOUND
                 if res == 'action_prohibited':
@@ -133,42 +138,42 @@ def send_slack_message(payload):
                 pass
             return ERROR_CODE_HTTP_FAIL
     except:
-        print >> sys.stderr, "FATAL Unexpected error:", sys.exc_info()[0]
+        log("FATAL Unexpected error:", sys.exc_info()[0])
+        track = traceback.format_exc()
+        log(track)
         return ERROR_CODE_UNEXPECTED
 
 def validate_payload(payload):
     if not 'configuration' in payload:
-        print >> sys.stderr, "FATAL Invalid payload, missing 'configuration'"
+        log("FATAL Invalid payload, missing 'configuration'")
         return False
     config = payload.get('configuration')
     channel = config.get('channel')
 
     if channel and (channel[0] != '#' and channel[0] != '@'):
         # Only warn here for now
-        print >> sys.stderr, "WARN Validation warning: Parameter `channel` \"%s\" should start with # or @" % channel
+        log("WARN Validation warning: Parameter `channel` \"%s\" should start with # or @" % channel)
 
     msg = config.get('message')
     if not msg:
-        print >> sys.stderr, "FATAL Validation error: Parameter `message` is missing or empty"
+        log("FATAL Validation error: Parameter `message` is missing or empty")
         return False
 
     att = config.get('attachment')
     if att and att not in ('alert_link', 'message'):
-        print >> sys.stderr, "WARN Validation warning: Parameter `attachment` must be ether \"alert_link\" or \"message\""
+        log("WARN Validation warning: Parameter `attachment` must be ether \"alert_link\" or \"message\"")
 
     return True
 
 if __name__ == '__main__':
+    log("INFO Running python %s" % (sys.version_info[0]))
     if len(sys.argv) > 1 and sys.argv[1] == "--execute":
         payload = json.loads(sys.stdin.read())
-
         if not validate_payload(payload):
             sys.exit(ERROR_CODE_VALIDATION_FAILED)
-    
         result = send_slack_message(payload)
         if result == OK:
-            print >> sys.stderr, "INFO Successfully sent slack message"
+            log("INFO Successfully sent slack message")
         else:
-            print >> sys.stderr, "FATAL Alert action failed"
-
+            log("FATAL Alert action failed")
         sys.exit(result)

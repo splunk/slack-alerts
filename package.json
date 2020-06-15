@@ -1,16 +1,17 @@
 {
   "name": "splunk-slack-alerts",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "description": "Slack alert action for Splunk Enterprise",
+  "private": true,
   "splunk": {
     "appName": "slack_alerts"
   },
   "repository": "git@github.com:ziegfried/splunk-slack-alerts.git",
   "author": "Siegfried Puchbauer <spuchbauer@splunk.com>",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {
     "onchange": "^3.2.1",
-    "splunk-slap": "^0.0.5"
+    "splunk-slap": "^0.0.6"
   },
   "scripts": {
     "setup": "yarn install && yarn build && yarn symlink",
