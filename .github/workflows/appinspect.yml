@@ -37,3 +37,4 @@ jobs:
                   filePath: ./dist/slack-alerts.spl
                   splunkUser: ${{ secrets.SPLUNKBASE_USER }}
                   splunkPassword: ${{ secrets.SPLUNKBASE_PASSWORD }}
+                  includedTags: cloud

@@ -478,7 +478,7 @@ const core_1 = __webpack_require__(470);
 const fs = __importStar(__webpack_require__(747));
 const api_1 = __webpack_require__(85);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-function appInspect({ user, password, filePath, }) {
+function appInspect({ user, password, filePath, includedTags, excludedTags, }) {
     return __awaiter(this, void 0, void 0, function* () {
         core_1.info(`Submitting file ${filePath} to appinspect API...`);
         if (!fs.existsSync(filePath)) {
@@ -488,8 +488,8 @@ function appInspect({ user, password, filePath, }) {
         const submitRes = yield api_1.submit({
             filePath,
             token,
-            // includedTags: ['cloud'],
-            excludedTags: ['cloud'],
+            includedTags,
+            excludedTags,
         });
         const reqId = submitRes.request_id;
         core_1.info(`Submitted and received reqId=${reqId}`);
@@ -548,13 +548,20 @@ function appInspect({ user, password, filePath, }) {
         }
     });
 }
+const splitTags = (value) => {
+    if (value) {
+        return value.trim().split(/\s*,\s*/);
+    }
+};
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const filePath = core_1.getInput('filePath');
             const user = core_1.getInput('splunkUser');
             const password = core_1.getInput('splunkPassword');
-            yield appInspect({ user, password, filePath });
+            const includedTags = splitTags(core_1.getInput('includedTags'));
+            const excludedTags = splitTags(core_1.getInput('includedTags'));
+            yield appInspect({ user, password, filePath, includedTags, excludedTags });
         }
         catch (error) {
             core_1.setFailed(error.message);
