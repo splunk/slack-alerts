@@ -1,5 +1,7 @@
 # Slack alert action for Splunk
 
+[![App Inspect](https://github.com/ziegfried/splunk-slack-alerts/workflows/App%20Inspect/badge.svg)](https://github.com/ziegfried/splunk-slack-alerts/actions?query=workflow%3A"App+Inspect"+branch%3Amaster)
+
 This app adds a new custom alert action to your Splunk instance which allows you
 to send a message to a Slack channel.
 
