@@ -8,10 +8,14 @@ async function appInspect({
     user,
     password,
     filePath,
+    includedTags,
+    excludedTags,
 }: {
     filePath: string;
     user: string;
     password: string;
+    includedTags?: string[];
+    excludedTags?: string[];
 }): Promise<void> {
     info(`Submitting file ${filePath} to appinspect API...`);
     if (!fs.existsSync(filePath)) {
@@ -22,8 +26,8 @@ async function appInspect({
     const submitRes: SubmitResponse = await submit({
         filePath,
         token,
-        // includedTags: ['cloud'],
-        excludedTags: ['cloud'],
+        includedTags,
+        excludedTags,
     });
 
     const reqId = submitRes.request_id;
@@ -96,13 +100,21 @@ async function appInspect({
     }
 }
 
+const splitTags = (value: string | null | undefined): string[] | undefined => {
+    if (value) {
+        return value.trim().split(/\s*,\s*/);
+    }
+};
+
 async function run(): Promise<void> {
     try {
         const filePath: string = getInput('filePath');
         const user = getInput('splunkUser');
         const password = getInput('splunkPassword');
+        const includedTags = splitTags(getInput('includedTags'));
+        const excludedTags = splitTags(getInput('includedTags'));
 
-        await appInspect({ user, password, filePath });
+        await appInspect({ user, password, filePath, includedTags, excludedTags });
     } catch (error) {
         setFailed(error.message);
     }

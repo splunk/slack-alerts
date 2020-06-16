@@ -14,3 +14,9 @@ inputs:
     splunkPassword:
         description: Splunk.com password used to login to the appinspect API
         required: true
+    includedTags:
+        description: Comma separated list of tags to include in appinspect job
+        required: false
+    excludedTags:
+        description: Comma separated list of tags to exclude from appinspect job
+        required: false
