@@ -40,8 +40,8 @@
     "package": "slap package --prod",
     "pkg": "yarn package",
     "rebuild": "echo \"Rebuilding...\" && slap stage --skip-clean",
-    "start": "yarn build && onchange src/main/resources/splunk/** -- slap stage",
-    "test": "python -m unittest discover -s src/main/resources/splunk/bin -p '*_tests.py' -v",
-    "test:watch": "onchange src/main/resources/splunk/bin/** -- yarn test"
+    "start": "yarn build && onchange src/** -- slap stage",
+    "test": "python -m unittest discover -s src/app/bin -p '*_tests.py' -v",
+    "test:watch": "onchange src/app/bin/** -- yarn test"
   }
 }
