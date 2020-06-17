@@ -1,6 +1,6 @@
 {
   "name": "splunk-slack-alerts",
-  "version": "2.1.0",
+  "version": "2.1.2",
   "description": "Slack alert action for Splunk Enterprise",
   "private": true,
   "splunk": {
