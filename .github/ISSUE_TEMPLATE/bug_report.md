@@ -24,9 +24,13 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Splunk Environment:**
- - Splunk Version [eg. 8.0.4]
- - OS: [eg. linux, macos, windows]
+ - Splunk Version: [eg. 8.0.4]
+ - OS: [eg. Linux, MacOS, Windows]
  - Cloud: [yes if Splunk Cloud, no if self-hosted]
+
+**Client Environment:** (if it's a UI issue)
+ - Browser Type: [eg. Brave, Chrome, Firefox]
+ - OS: [eg. Windows, MacOS]
 
 **Additional context**
 Add any other context about the problem here.
