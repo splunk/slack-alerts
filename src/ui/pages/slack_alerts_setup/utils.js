@@ -3,7 +3,7 @@ export function makeUrl(path) {
     return `${MRSPARKLE_ROOT_PATH || ''}/${LOCALE}${path}`;
 }
 
-function getFormKey() {
+export function getFormKey() {
     const prefix = `splunkweb_csrf_token_${window.$C.MRSPARKLE_PORT_NUMBER}=`;
     if (document.cookie) {
         for (const chunk of document.cookie.split(';')) {
@@ -15,7 +15,7 @@ function getFormKey() {
     }
 }
 
-const eq = (a, b) => {
+export const eq = (a, b) => {
     const ka = Object.keys(a);
     const kb = Object.keys(b);
     return ka.length === kb.length && ka.every((k) => k in b && a[k] === b[k]);
