@@ -1,39 +1,21 @@
-# Slack alert action for Splunk
+# Slack Alert Action for Splunk
 
 [![App Inspect](https://github.com/ziegfried/splunk-slack-alerts/workflows/App%20Inspect/badge.svg)](https://github.com/ziegfried/splunk-slack-alerts/actions?query=workflow%3A"App+Inspect"+branch%3Amaster)
 
-This app adds a new custom alert action to your Splunk instance which allows you
-to send a message to a Slack channel.
+This app adds a new custom alert action to your Splunk instance which allows you to send a message to a Slack channel.
 
-## Dev Setup
+<div align="center">
+    <img src="./screenshots/message_example.png?raw=true" width="569" height="301" alt="Example Screnshot" />
+</div>
 
-This project uses the [Yarn](https://yarnpkg.com/) package manager. Once you have Yarn, use the following command to
-install the dependencies:
+## Get Started
 
-```
-$ yarn install
-```
+See the [developer documentation](./DEVELOPING.md) if you want to make changes to the app and run it locally.
 
-## Build & Package
+## Usage Documentation
 
-In order to build the app run
+Docs on how to use the app can be found in the [app README](./src/app/README.md).
 
-```sh
-$ yarn build
-```
+## Contributing
 
-If you want to link your built app to a local Splunk instance, run
-
-```sh
-$ yarn symlink
-```
-
-Note: you'll have to have your `$SPLUNK_HOME` enviroment variable set correctly.
-
-To build a package you can upload to [Splunkbase](http://splunkbase.com/), run the following command:
-
-```sh
-$ yarn package
-```
-
-This will create a `*.spl` file in the `dist/` directory.
+Thank you for considering to contribute to Slack Alerts for Splunk! Please read the [contribution guidelines](./CONTRIBUTING.md) to get started.
