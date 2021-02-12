@@ -5,6 +5,8 @@ import time
 import traceback
 from copy import deepcopy
 from fnmatch import fnmatch
+
+from six.moves.urllib import request
 from safe_fmt import safe_format
 from six import ensure_binary
 from six.moves import urllib
@@ -101,6 +103,7 @@ def send_slack_message(payload):
     try:
         config = payload.get('configuration')
         url = config.get('webhook_url', '')
+
         if config.get('webhook_url_override'):
             url = config.get('webhook_url_override', '')
             log("INFO Using webhook URL from webhook_url_override: %s" % url)
@@ -114,12 +117,27 @@ def send_slack_message(payload):
             log("FATAL Invalid webhook URL specified. The URL must use HTTPS.")
             return ERROR_CODE_VALIDATION_FAILED
 
+        http_proxy = config.get('http_proxy', '')
+        
+        if config.get('proxy_url_override'):
+            http_proxy = config.get('proxy_url_override', '')
+            log("DEBUG Using proxy URL from proxy_url_override: %s" % http_proxy)
+
+        log("INFO proxy: %s" % http_proxy)
         body = json.dumps(build_slack_message(payload))
 
         log('DEBUG Calling url="%s" with body=%s' % (url, body))
-        req = urllib.request.Request(url, ensure_binary(body), {"Content-Type": "application/json"})
+        #req = urllib.request.Request(url, ensure_binary(body), {"Content-Type": "application/json"})
+        req = urllib.request
+        if  http_proxy:
+
+            proxy_handler = req.ProxyHandler({ 'http': '%s' % http_proxy, 'https': '%s' % http_proxy, })
+            opener = req.build_opener(proxy_handler)
+            req.install_opener(opener) 
+
         try:
-            res = urllib.request.urlopen(req)
+            myreq = req.Request(url, ensure_binary(body), {"Content-Type": "application/json"})
+            res = urllib.request.urlopen(myreq)
             body = res.read()
             log("INFO Slack API responded with HTTP status=%d" % res.code)
             log("DEBUG Slack API response: %s" % body)

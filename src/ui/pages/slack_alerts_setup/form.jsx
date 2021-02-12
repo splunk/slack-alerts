@@ -15,10 +15,12 @@ export function SetupForm() {
     const updateUrl = useCallback((e, { value }) => update({ ...data, webhook_url: value }));
     const updateUser = useCallback((e, { value }) => update({ ...data, from_user: value }));
     const updateUserIcon = useCallback((e, { value }) => update({ ...data, from_user_icon: value }));
+    const updateProxy = useCallback((e, { value }) => update({ ...data, http_proxy: value }));
 
     const webhookUrl = loading ? '' : data.webhook_url;
     const fromUserName = loading ? '' : data.from_user;
     const fromUserIcon = loading ? '' : data.from_user_icon;
+    const httpProxy = loading ? '' : data.http_proxy;
 
     return (
         <>
@@ -46,6 +48,14 @@ export function SetupForm() {
                         onChange={updateUrl}
                         disabled={loading}
                         placeholder="https://hooks.slack.com/services/XXXXX/YYYY/ZZZZZ"
+                    />
+                </ControlGroup>
+                <ControlGroup label="Proxy" help="Configure proxy ( optional )">
+                    <Text
+                        value={httpProxy}
+                        onChange={updateProxy}
+                        disabled={loading}
+                        placeholder="http://yourproxy:port"
                     />
                 </ControlGroup>
             </FormWrapper>
