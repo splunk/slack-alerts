@@ -50,7 +50,13 @@ export function SetupForm() {
                         placeholder="https://hooks.slack.com/services/XXXXX/YYYY/ZZZZZ"
                     />
                 </ControlGroup>
-                <ControlGroup label="Proxy" help="Configure proxy ( optional )">
+            </FormWrapper>
+            <Heading level={3}>Proxy Setting</Heading>
+            <Paragraph>
+                The following settings will configure the default proxy server for slack alerts.
+            </Paragraph>
+            <FormWrapper>
+                <ControlGroup label="Proxy URL" help="Configure proxy, leave empty if you don't need proxy">
                     <Text
                         value={httpProxy}
                         onChange={updateProxy}
