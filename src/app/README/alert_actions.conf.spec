@@ -4,6 +4,9 @@ param.webhook_url = <string>
 * The webhook URL to send the Slack message requests to. This can be obtained
 * by creating a new "Incoming webhook" integration in Slack.
 
+param.http_proxy = <string>
+* your proxy http://proxy:port
+
 param.from_user = <string>
 * The name of the user sending the Slack message. By default this is "Splunk".
 
