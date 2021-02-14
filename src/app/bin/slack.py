@@ -136,8 +136,8 @@ def send_slack_message(payload):
             req.install_opener(opener) 
 
         try:
-            myreq = req.Request(url, ensure_binary(body), {"Content-Type": "application/json"})
-            res = urllib.request.urlopen(myreq)
+            rreq = req.Request(url, ensure_binary(body), {"Content-Type": "application/json"})
+            res = urllib.request.urlopen(rreq)
             body = res.read()
             log("INFO Slack API responded with HTTP status=%d" % res.code)
             log("DEBUG Slack API response: %s" % body)
