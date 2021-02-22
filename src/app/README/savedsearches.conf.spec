@@ -23,3 +23,6 @@ action.slack.param.fields = <csv-list>
 action.slack.param.webhook_url_override = <string>
 * Override the Slack webhook URL for a single alert. This useful when wanting
 * to send some alerts to different Slack teams.
+
+action.slack.param.proxy_url_override = <string>
+* Override Proxy setting for single alert.
