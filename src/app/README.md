@@ -14,10 +14,23 @@ App installation requires admin privileges.
 
 In order to setup the app, navigate to "Settings" -> "Alert actions". Click on "Setup Slack Alerts".
 
+On the setup screen, you'll need to supply a Slack App OAuth token. To set up a new Slack App for your
+workspace, follow the instructions on https://api.slack.com/apps.
+
+Once you have the Slack App created, you **must** give the app permission to the `chat:write` and
+`chat:write.public` OAuth scopes in your Slack workspace. These scopes allow your app to write messages
+to every public channel and user in your workspace. The app will also be able to write to any private
+channel that it is added to.
+
+#### Deprecated configuration option
+
+> This alert action was originally built using the Slack Webhook URL functionality. Slack has recently
+> deprecated this feature in favor of the Slack App method above. **Webhook URL support may be
+> removed in a future release of Slack.** For more information see
+> https://slack.com/apps/A0F7XDUAZ-incoming-webhooks
+
 On the setup screen you'll want to supply a Webhook URL. You can obtain this URL by configuring a
 custom integration for you Slack workspace.
-
-For more information see https://slack.com/apps/A0F7XDUAZ-incoming-webhooks
 
 ## Troubleshooting
 

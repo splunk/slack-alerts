@@ -46,6 +46,18 @@
     <br clear="both" />
     <div style="clear: both; color: #888; margin: 25px 0 10px 0;">Advanced settings:</div>
     <div style="clear: both" class="control-group">
+        <label class="control-label" for="slack_app_token_override">Slack App OAuth Token</label>
+
+        <div class="controls">
+            <input type="text" name="action.slack.param.slack_app_oauth_token_override" id="slack_fields" placeholder="Optional" />
+            <span class="help-block">
+                You can override the <a href="https://api.slack.com/apps" target="_blank" noreferer>Slack App OAuth Token</a> here
+                if you need to send the alert message to a different Slack team.
+            </span>
+        </div>
+    </div>
+    <br clear="both" />
+    <div style="clear: both" class="control-group">
         <label class="control-label" for="slack_url_override">Webhook URL</label>
 
         <div class="controls">
