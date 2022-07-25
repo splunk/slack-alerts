@@ -49,8 +49,11 @@ settings:
                 <TabLayout.Panel label="Slack App OAuth Token (preferred)" panelId="oauth" style={{ margin: 20 }}>
                     <Paragraph>
                         The Slack App OAuth token is the preferred method for using the Slack alert action.
-                        The webhook url method (in the second tab) is deprecated and may be removed in a future release
-                        of Slack.
+                        The webhook url method (in the second tab) is {' '}
+                        <Link to="https://slack.com/apps/A0F7XDUAZ-incoming-webhooks" openInNewContext>
+                            deprecated
+                        </Link>{' '}
+                        and may be removed in a future release of Slack.
                     </Paragraph>
                     <Heading level={3}>Slack App OAuth Token</Heading>
                     <Paragraph>
@@ -112,7 +115,7 @@ settings:
                     </Paragraph>
                     <Heading level={3}>Slack Incoming Webhook</Heading>
                     <Paragraph>
-                        This alert action uses Slack's{' '}
+                        This alert action uses Slack's deprecated{' '}
                         <Link to="https://slack.com/apps/A0F7XDUAZ-incoming-webhooks" openInNewContext>
                             Incoming Webhooks
                         </Link>{' '}
