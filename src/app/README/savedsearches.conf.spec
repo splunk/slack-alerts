@@ -21,7 +21,7 @@ action.slack.param.fields = <csv-list>
 * prefixed fields, etc.
 
 action.slack.param.slack_app_oauth_token_override = <string>
-* Override the Slack App OAuth token for a single alert. This useful when wanting
+* Override the Slack App OAuth token for a single alert. This is useful when wanting
 * to send some alerts to different Slack teams.
 
 action.slack.param.webhook_url_override = <string>

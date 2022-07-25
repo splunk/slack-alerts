@@ -45,7 +45,6 @@ settings:
 
     return (
         <>
-
             <TabLayout defaultActivePanelId="oauth">
                 <TabLayout.Panel label="Slack App OAuth Token (preferred)" panelId="oauth" style={{ margin: 20 }}>
                     <Paragraph>
