@@ -24,6 +24,8 @@ def log(msg, *args):
 
 def build_fields_attachment(payload):
     res = payload.get('result', dict())
+    if not res:
+        res={}
     available_fields = list(res.keys())
     field_attachments = []
     seen_fields = set()
