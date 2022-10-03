@@ -1,13 +1,22 @@
 [slack]
 
+param.slack_app_oauth_token = <string>
+* The Slack App OAuth token that Splunk should use to send Slack alerts.  This
+* can be obtained by create a new Slack App for your workspace at
+* https://api.slack.com/apps.
+* This takes precendence over the deprecated webhook_url parameter (below).
+
 param.webhook_url = <string>
+* DEPRECATED - Slack has deprecated this feature and will possibly be removed in the future.
 * The webhook URL to send the Slack message requests to. This can be obtained
 * by creating a new "Incoming webhook" integration in Slack.
 
 param.from_user = <string>
+* DEPRECATED - This is only used in the deprecated webhook_url parameter.
 * The name of the user sending the Slack message. By default this is "Splunk".
 
 param.from_user_icon = <string>
+* DEPRECATED - This is only used in the deprecated webhook_url parameter.
 * URL to an icon to show as the avatar for the Slack message. By default this is
 * a Splunk icon.
 

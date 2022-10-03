@@ -99,34 +99,59 @@ def build_slack_message(payload):
 
 def send_slack_message(payload):
     try:
+        req = {}
         config = payload.get('configuration')
-        url = config.get('webhook_url', '')
-        if config.get('webhook_url_override'):
-            url = config.get('webhook_url_override', '')
-            log("INFO Using webhook URL from webhook_url_override: %s" % url)
-        elif not url:
-            log("FATAL No webhook URL configured and no override specified")
-            return ERROR_CODE_VALIDATION_FAILED
-        else:
-            log("INFO Using configured webhook URL: %s" % url)
-
-        if not url.startswith('https:'):
-            log("FATAL Invalid webhook URL specified. The URL must use HTTPS.")
-            return ERROR_CODE_VALIDATION_FAILED
-
         body = json.dumps(build_slack_message(payload))
 
-        log('DEBUG Calling url="%s" with body=%s' % (url, body))
-        req = urllib.request.Request(url, ensure_binary(body), {"Content-Type": "application/json"})
+        # Since Slack webhook URLs are deprecated, we will bias towards using Slack Apps, if they are provided
+        is_using_slack_app = (("slack_app_oauth_token" in config and config["slack_app_oauth_token"]) or ("slack_app_oauth_token_override" in config and config["slack_app_oauth_token_override"]))
+        if is_using_slack_app:
+            token = config.get("slack_app_oauth_token", "")
+            if config.get("slack_app_oauth_token_override"):
+                token = config.get("slack_app_oauth_token_override")
+                log("INFO Using Slack App OAuth token from slack_app_oauth_token_override: %s" % token)
+            else:
+                log("INFO Using configured Slack App OAuth token: %s" % token)
+
+            log('DEBUG Calling url="https://slack.com/api/chat.postMessage" with token=%s and body=%s' % (token, body))
+            req = urllib.request.Request("https://slack.com/api/chat.postMessage", ensure_binary(body), {"Content-Type": "application/json", 'Authorization': "Bearer %s" % token})
+
+        # To preserve backwards compatibility, we will fallback to the webhook_url configuration, if a Slack App OAuth token is not provided
+        else:
+            url = config.get('webhook_url', '')
+            if config.get('webhook_url_override'):
+                url = config.get('webhook_url_override', '')
+                log("INFO Using webhook URL from webhook_url_override: %s" % url)
+            elif not url:
+                log("FATAL No webhook URL configured and no override specified")
+                return ERROR_CODE_VALIDATION_FAILED
+            else:
+                log("INFO Using configured webhook URL: %s" % url)
+
+            if not url.startswith('https:'):
+                log("FATAL Invalid webhook URL specified. The URL must use HTTPS.")
+                return ERROR_CODE_VALIDATION_FAILED
+
+            log('DEBUG Calling url="%s" with body=%s' % (url, body))
+            req = urllib.request.Request(url, ensure_binary(body), {"Content-Type": "application/json"})
+
         try:
             res = urllib.request.urlopen(req)
-            body = res.read()
+            res_body = str(res.read())
             log("INFO Slack API responded with HTTP status=%d" % res.code)
-            log("DEBUG Slack API response: %s" % body)
+            log("DEBUG Slack API response: %s" % res_body)
             if 200 <= res.code < 300:
+                if "invalid_auth" in res_body:
+                    log("FATAL The Slack App OAuth token provided is invalid or does not have the permission to post messages to the channel provided.")
+                    return ERROR_CODE_FORBIDDEN
+                if "channel_not_found" in res_body or "channel_is_archived" in res_body:
+                    log("FATAL The channel provided was not found or is archived. If the channel is private, please make sure the Slack App is added to the channel.")
+                    return ERROR_CODE_CHANNEL_NOT_FOUND
+                if "error" in res_body:
+                    return ERROR_CODE_UNKNOWN
                 return OK
         except urllib.error.HTTPError as e:
-            log("ERROR HTTP request to Slack webhook URL failed: %s" % e)
+            log("ERROR HTTP request to Slack API failed: %s" % e)
             try:
                 res = e.read()
                 log("ERROR Slack error response: %s" % res)
