@@ -11,9 +11,9 @@
   "author": "Siegfried Puchbauer <spuchbauer@splunk.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@splunk/react-page": "^3.0.0",
-    "@splunk/react-toast-notifications": "^0.7.0",
-    "@splunk/react-ui": "^2",
+    "@splunk/react-page": "^6.0.2",
+    "@splunk/react-toast-notifications": "^0.11.0",
+    "@splunk/react-ui": "^4.14.0",
     "react": "^16",
     "react-dom": "^16",
     "styled-components": "^4"
