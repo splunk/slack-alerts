@@ -82,8 +82,10 @@ def build_slack_message(payload):
 
     if config['attachment'] != 'message':
         params['text'] = format_template('message', payload)
-    params['username'] = config.get('from_user', 'Splunk')
-    params['icon_url'] = config.get('from_user_icon')
+    if config.get('from_user'):
+        params['username'] = config.get('from_user')
+    if config.get('from_user_icon'):
+        params['icon_url'] = config.get('from_user_icon')
 
     channel = config.get('channel')
     if channel:
