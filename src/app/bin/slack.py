@@ -103,6 +103,18 @@ def send_slack_message(payload):
         config = payload.get('configuration')
         body = json.dumps(build_slack_message(payload))
 
+        http_proxy = config.get('http_proxy', '')
+        
+        if config.get('proxy_url_override'):
+            http_proxy = config.get('proxy_url_override', '')
+            log(f"DEBUG Using proxy URL from proxy_url_override: {http_proxy}")
+        
+        req = urllib.request
+        if http_proxy:
+            proxy_handler = req.ProxyHandler({ 'http': f"{http_proxy}", 'https': f"{http_proxy}", })
+            opener = req.build_opener(proxy_handler)
+            req.install_opener(opener) 
+
         # Since Slack webhook URLs are deprecated, we will bias towards using Slack Apps, if they are provided
         is_using_slack_app = (("slack_app_oauth_token" in config and config["slack_app_oauth_token"]) or ("slack_app_oauth_token_override" in config and config["slack_app_oauth_token_override"]))
         if is_using_slack_app:
@@ -114,7 +126,7 @@ def send_slack_message(payload):
                 log("INFO Using configured Slack App OAuth token: %s" % token)
 
             log('DEBUG Calling url="https://slack.com/api/chat.postMessage" with token=%s and body=%s' % (token, body))
-            req = urllib.request.Request("https://slack.com/api/chat.postMessage", ensure_binary(body), {"Content-Type": "application/json", 'Authorization': "Bearer %s" % token})
+            msg_req = req.Request("https://slack.com/api/chat.postMessage", ensure_binary(body), {"Content-Type": "application/json", 'Authorization': "Bearer %s" % token})
 
         # To preserve backwards compatibility, we will fallback to the webhook_url configuration, if a Slack App OAuth token is not provided
         else:
@@ -133,10 +145,10 @@ def send_slack_message(payload):
                 return ERROR_CODE_VALIDATION_FAILED
 
             log('DEBUG Calling url="%s" with body=%s' % (url, body))
-            req = urllib.request.Request(url, ensure_binary(body), {"Content-Type": "application/json"})
+            msg_req = req.Request(url, ensure_binary(body), {"Content-Type": "application/json"})
 
         try:
-            res = urllib.request.urlopen(req)
+            res = urllib.request.urlopen(msg_req)
             res_body = str(res.read())
             log("INFO Slack API responded with HTTP status=%d" % res.code)
             log("DEBUG Slack API response: %s" % res_body)

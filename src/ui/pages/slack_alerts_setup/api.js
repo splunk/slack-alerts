@@ -17,6 +17,7 @@ export function loadAlertActionConfig() {
                 webhook_url: d['param.webhook_url'],
                 from_user: d['param.from_user'],
                 from_user_icon: d['param.from_user_icon'],
+                http_proxy: d['param.http_proxy'],
             };
         });
 }
@@ -31,6 +32,7 @@ export function updateAlertActionConfig(data) {
                 `param.webhook_url=${encodeURIComponent(data.webhook_url)}`,
                 `param.from_user=${encodeURIComponent(data.from_user)}`,
                 `param.from_user_icon=${encodeURIComponent(data.from_user_icon)}`,
+                `param.http_proxy=${encodeURIComponent(data.http_proxy)}`,
             ].join('&'),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
