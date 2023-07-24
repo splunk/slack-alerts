@@ -19,11 +19,13 @@ export function SetupForm() {
     const updateUrl = useCallback((e, { value }) => update({ ...data, webhook_url: value }));
     const updateUser = useCallback((e, { value }) => update({ ...data, from_user: value }));
     const updateUserIcon = useCallback((e, { value }) => update({ ...data, from_user_icon: value }));
+    const updateProxy = useCallback((e, { value }) => update({ ...data, http_proxy: value }));
 
     const slackAppOauthToken = loading ? '' : data.slack_app_oauth_token;
     const webhookUrl = loading ? '' : data.webhook_url;
     const fromUserName = loading ? '' : data.from_user;
     const fromUserIcon = loading ? '' : data.from_user_icon;
+    const httpProxy = loading ? '' : data.http_proxy;
 
     const oauth_app_manifest = `
 display_information:
@@ -144,6 +146,20 @@ settings:
             </TabLayout>
 
             <div style={{ margin: 20 }}>
+                <Heading level={3}>Proxy Setting</Heading>
+                <Paragraph>
+                    The following settings will configure the default proxy server for slack alerts.
+                </Paragraph>
+                <FormWrapper>
+                    <ControlGroup label="Proxy URL" help="Configure proxy, leave empty if you don't need proxy">
+                        <Text
+                            value={httpProxy}
+                            onChange={updateProxy}
+                            disabled={loading}
+                            placeholder="http://yourproxy:port"
+                        />
+                    </ControlGroup>
+                </FormWrapper>
                 <Heading level={3}>Message Appearance</Heading>
                 <Paragraph>
                     The following settings will influence how messages will show up in Slack.{' '}
