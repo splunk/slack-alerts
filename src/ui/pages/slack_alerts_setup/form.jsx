@@ -19,6 +19,7 @@ export function SetupForm() {
     const updateUrl = useCallback((e, { value }) => update({ ...data, webhook_url: value }));
     const updateUser = useCallback((e, { value }) => update({ ...data, from_user: value }));
     const updateUserIcon = useCallback((e, { value }) => update({ ...data, from_user_icon: value }));
+    const updateProxy = useCallback((e, { value }) => update({ ...data, http_proxy: value }));
 
     const slackAppOauthToken = loading ? '' : data.slack_app_oauth_token;
     const webhookUrl = loading ? '' : data.webhook_url;
