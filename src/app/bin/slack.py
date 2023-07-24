@@ -107,11 +107,11 @@ def send_slack_message(payload):
         
         if config.get('proxy_url_override'):
             http_proxy = config.get('proxy_url_override', '')
-            log(f"DEBUG Using proxy URL from proxy_url_override: {http_proxy}")
+            log("DEBUG Using proxy URL from proxy_url_override: %s" % http_proxy)
         
         req = urllib.request
         if http_proxy:
-            proxy_handler = req.ProxyHandler({ 'http': f"{http_proxy}", 'https': f"{http_proxy}", })
+            proxy_handler = req.ProxyHandler({ 'http': "%s" % http_proxy, 'https': "%s" % http_proxy})
             opener = req.build_opener(proxy_handler)
             req.install_opener(opener) 
 
