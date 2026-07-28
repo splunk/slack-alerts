@@ -1,0 +1,13 @@
+[project]
+name = "slack-alerts"
+version = "3.0.0"
+description = "Slack alert action for Splunk (dev tooling)"
+requires-python = ">=3.9,<3.14"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["*_tests.py", "test_*.py"]
+pythonpath = ["package/bin"]
+
+[tool.black]
+extend-exclude = "output"

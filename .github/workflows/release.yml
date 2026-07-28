@@ -3,48 +3,32 @@ name: Release
 on:
     push:
         tags:
-            - 'v*'
+            - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+    contents: write
 
 jobs:
     release:
         name: Release app version
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v1
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v5
               with:
-                  node-version: 12.x
-            - uses: actions/cache@v1
-              with:
-                  path: node_modules
-                  key: nodeModules-${{ hashFiles('**/yarn.lock') }}
-                  restore-keys: |
-                      nodeModules-
-            - name: Install dependencies
-              run: yarn install --frozen-lockfile
-              env:
-                  CI: true
-            - name: Build app package
+                  python-version: "3.13"
+            - name: Install build tooling
+              run: pip install splunk-add-on-ucc-framework
+            - name: Build add-on
               run: |
-                  yarn package
-                  mv dist/*.spl dist/slack-alerts.spl
-            - name: Create Release
-              id: create_release
-              uses: actions/create-release@v1
+                  VERSION=$(python -c "import json; print(json.load(open('globalConfig.json'))['meta']['version'])")
+                  ucc-gen build --source package --ta-version "$VERSION"
+                  ucc-gen package --path output/slack_alerts
+            - name: Create release
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  tag_name: ${{ github.ref }}
-                  release_name: Release ${{ github.ref }}
-                  draft: false
-                  prerelease: false
-            - name: Upload Release Asset
-              id: upload-release-asset
-              uses: actions/upload-release-asset@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-                  asset_path: ./dist/slack-alerts.spl
-                  asset_name: slack-alerts-${{ github.ref }}.tgz
-                  asset_content_type: application/gzip
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  gh release create "${GITHUB_REF_NAME}" \
+                      --title "Release ${GITHUB_REF_NAME}" \
+                      --generate-notes \
+                      slack_alerts-*.tar.gz

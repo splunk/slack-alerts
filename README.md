@@ -14,7 +14,11 @@ See the [developer documentation](./DEVELOPING.md) if you want to make changes t
 
 ## Usage Documentation
 
-Docs on how to use the app can be found in the [app README](./src/app/README.md).
+Docs on how to use the app can be found in the [app README](./package/README.md).
+
+## Changelog
+
+See [CHANGELOG.md](./package/CHANGELOG.md) for release notes and version history.
 
 ## Contributing
 

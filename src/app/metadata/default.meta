@@ -1,3 +1,0 @@
-[]
-export = system
-access = read : [ * ], write : [ admin, power ]

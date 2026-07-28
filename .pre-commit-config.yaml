@@ -1,0 +1,17 @@
+exclude: ^output/
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black

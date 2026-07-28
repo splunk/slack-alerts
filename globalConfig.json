@@ -1,0 +1,154 @@
+{
+    "meta": {
+        "name": "slack_alerts",
+        "displayName": "Slack Alerts",
+        "restRoot": "slack_alerts",
+        "version": "3.0.0",
+        "schemaVersion": "0.0.10",
+        "supportedThemes": [
+            "light",
+            "dark"
+        ],
+        "supportedPythonVersion": [
+            "3.9",
+            "3.13"
+        ]
+    },
+    "pages": {
+        "configuration": {
+            "title": "Configuration",
+            "description": "Set the default Slack credentials and options used by the Slack alert action.",
+            "tabs": [
+                {
+                    "name": "settings",
+                    "title": "Settings",
+                    "entity": [
+                        {
+                            "type": "text",
+                            "label": "Slack App OAuth Token",
+                            "field": "slack_app_oauth_token",
+                            "encrypted": true,
+                            "required": false,
+                            "help": "Default Slack App OAuth token (starts with xoxb-). Grant the chat:write and chat:write.public scopes. Preferred over the deprecated webhook URL.",
+                            "options": {
+                                "display": true
+                            }
+                        },
+                        {
+                            "type": "text",
+                            "label": "Webhook URL",
+                            "field": "webhook_url",
+                            "encrypted": true,
+                            "required": false,
+                            "help": "Deprecated. Default Slack incoming webhook URL (must use HTTPS). Only used when no OAuth token is configured.",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^$|^https://.+",
+                                    "errorMsg": "Webhook URL must start with https://"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "text",
+                            "label": "From user",
+                            "field": "from_user",
+                            "required": false,
+                            "defaultValue": "Splunk",
+                            "help": "Username shown as the message sender. Webhook only; ignored when a Slack App OAuth token is set."
+                        },
+                        {
+                            "type": "text",
+                            "label": "From user icon",
+                            "field": "from_user_icon",
+                            "required": false,
+                            "defaultValue": "https://s3-us-west-1.amazonaws.com/ziegfried-apps/slack-alerts/splunk-icon.png",
+                            "help": "URL of the icon shown next to the message sender. Webhook only; ignored when a Slack App OAuth token is set."
+                        }
+                    ]
+                },
+                {
+                    "type": "proxyTab",
+                    "name": "proxy"
+                }
+            ]
+        }
+    },
+    "alerts": [
+        {
+            "name": "slack",
+            "label": "Slack",
+            "description": "Send a message to a Slack channel",
+            "iconFileName": "slack.png",
+            "customScript": "slack_logic",
+            "entity": [
+                {
+                    "type": "text",
+                    "label": "Channel",
+                    "field": "channel",
+                    "required": false,
+                    "help": "Slack channel to send the message to (should start with # or @). Leave empty to use the webhook default."
+                },
+                {
+                    "type": "textarea",
+                    "label": "Message",
+                    "field": "message",
+                    "required": true,
+                    "help": "Chat message to send to the Slack channel. Can include tokens that insert text from the search results."
+                },
+                {
+                    "type": "singleSelect",
+                    "label": "Attachment",
+                    "field": "attachment",
+                    "required": false,
+                    "defaultValue": "none",
+                    "help": "Optionally include an attachment.",
+                    "options": {
+                        "items": [
+                            {
+                                "value": "none",
+                                "label": "None"
+                            },
+                            {
+                                "value": "alert_link",
+                                "label": "Link to alert"
+                            },
+                            {
+                                "value": "message",
+                                "label": "Show message in attachment (instead of plain message)"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "text",
+                    "label": "Fields",
+                    "field": "fields",
+                    "required": false,
+                    "help": "Show one or more fields from the search results below the Slack message. Comma-separated list of field names. Allows wildcards, e.g. index,source*."
+                },
+                {
+                    "type": "text",
+                    "label": "Slack App OAuth Token override",
+                    "field": "slack_app_oauth_token_override",
+                    "required": false,
+                    "help": "Override the default Slack App OAuth token for this alert (e.g. to post to a different workspace)."
+                },
+                {
+                    "type": "text",
+                    "label": "Proxy URL override",
+                    "field": "proxy_url_override",
+                    "required": false,
+                    "help": "Override the default proxy for this alert. Use http://yourproxy:port."
+                },
+                {
+                    "type": "text",
+                    "label": "Webhook URL override",
+                    "field": "webhook_url_override",
+                    "required": false,
+                    "help": "Override the default Slack webhook URL for this alert."
+                }
+            ]
+        }
+    ]
+}

@@ -2,10 +2,17 @@ local/*
 tmp/*
 dist/*
 stage/*
+output/*
+*.tar.gz
+*.spl
 .idea
 node_modules
 .vscode
 *.pyc
 *.pyo
 __pycache__
+.pytest_cache/
+.ruff_cache/
+.python-version
+appinspect-*.txt
 .DS_Store

@@ -1,0 +1,2 @@
+splunktaucclib==8.2.0
+solnlib==7.0.0

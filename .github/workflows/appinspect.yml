@@ -10,31 +10,34 @@ jobs:
     appinspect:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v1
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v5
               with:
-                  node-version: 12.x
-            - uses: actions/cache@v1
-              with:
-                  path: node_modules
-                  key: nodeModules-${{ hashFiles('**/yarn.lock') }}
-                  restore-keys: |
-                      nodeModules-
-            - name: Install dependencies
-              run: yarn install --frozen-lockfile
-              env:
-                  CI: true
-            - name: Build app package
+                  python-version: "3.13"
+            - name: Install build tooling
+              run: pip install splunk-add-on-ucc-framework splunk-appinspect
+            - name: Build add-on
               run: |
-                  yarn package
-                  mv dist/*.spl dist/slack-alerts.spl
-            - uses: actions/upload-artifact@v1
+                  VERSION=$(python -c "import json; print(json.load(open('globalConfig.json'))['meta']['version'])")
+                  ucc-gen build --source package --ta-version "$VERSION"
+                  ucc-gen package --path output/slack_alerts
+            - uses: actions/upload-artifact@v4
               with:
                   name: app-package
-                  path: dist/slack-alerts.spl
-            - uses: ./.github/actions/appinspect
-              with:
-                  filePath: ./dist/slack-alerts.spl
-                  splunkUser: ${{ secrets.SPLUNKBASE_USER }}
-                  splunkPassword: ${{ secrets.SPLUNKBASE_PASSWORD }}
-                  includedTags: cloud
+                  path: slack_alerts-*.tar.gz
+            - name: Run App Inspect (Splunk Cloud)
+              run: |
+                  set +e
+                  splunk-appinspect inspect slack_alerts-*.tar.gz \
+                      --mode precert \
+                      --included-tags cloud \
+                      --ci
+                  code=$?
+                  set -e
+                  # --ci exit codes: 101 failures, 104 future-failures, 103 warnings-only.
+                  # Gate the build on failures; allow warnings-only (dependency-driven) to pass.
+                  if [ "$code" = "103" ]; then
+                      echo "App Inspect returned warnings only (exit 103); treating as pass."
+                      exit 0
+                  fi
+                  exit $code
