@@ -6,6 +6,7 @@ from fnmatch import fnmatch
 from urllib import error, request
 from urllib.parse import quote, urlsplit
 
+import slack_broker
 from safe_fmt import safe_format
 
 SEVERITY_COLORS = ["#555555", "#6DB7C6", "#65A637", "#F7BC38", "#F58F39", "#D93F3C"]
@@ -16,6 +17,7 @@ ERROR_CODE_CHANNEL_NOT_FOUND = 3
 ERROR_CODE_FORBIDDEN = 4
 ERROR_CODE_HTTP_FAIL = 5
 ERROR_CODE_UNEXPECTED = 6
+ERROR_CODE_BROKER_UNAVAILABLE = 7
 
 DEFAULT_FROM_USER = "Splunk"
 DEFAULT_FROM_USER_ICON = (
@@ -26,6 +28,9 @@ FOOTER_ICON = (
 )
 
 SECRET_KEY_MARKERS = ("token", "password", "secret", "webhook_url", "proxy_url")
+
+PROXY_HOST_EMPTY = "The proxy is enabled but its host is empty."
+PROXY_PORT_NOT_A_NUMBER = "The proxy is enabled but its port is not a number."
 
 
 def _is_secret_key(key):
@@ -53,10 +58,10 @@ def _build_config(helper):
         ),
         "proxy_url_override": helper.get_param("proxy_url_override"),
         "webhook_url_override": helper.get_param("webhook_url_override"),
-        "slack_app_oauth_token": helper.get_global_setting("slack_app_oauth_token"),
-        "webhook_url": helper.get_global_setting("webhook_url"),
-        "from_user": helper.get_global_setting("from_user") or DEFAULT_FROM_USER,
-        "from_user_icon": helper.get_global_setting("from_user_icon")
+        "slack_app_oauth_token": slack_broker.setting(helper, "slack_app_oauth_token"),
+        "webhook_url": slack_broker.setting(helper, "webhook_url"),
+        "from_user": slack_broker.setting(helper, "from_user") or DEFAULT_FROM_USER,
+        "from_user_icon": slack_broker.setting(helper, "from_user_icon")
         or DEFAULT_FROM_USER_ICON,
     }
     config.update(TEMPLATE_DEFAULTS)
@@ -82,22 +87,30 @@ def _proxy_uri(helper, config):
     if override:
         parts = urlsplit(override)
         if parts.scheme in ("http", "https") and parts.netloc:
-            return override
+            return override, OK
         helper.log_error(
             "Ignoring malformed proxy_url_override; expected http(s)://host:port."
         )
-        return ""
-    proxy = helper.get_proxy() or {}
-    if proxy.get("proxy_url") and proxy.get("proxy_port"):
-        scheme = proxy.get("proxy_type") or "http"
-        auth = ""
-        if proxy.get("proxy_username"):
-            auth = "%s:%s@" % (
-                quote(proxy["proxy_username"], safe=""),
-                quote(proxy.get("proxy_password", ""), safe=""),
-            )
-        return "%s://%s%s:%s" % (scheme, auth, proxy["proxy_url"], proxy["proxy_port"])
-    return ""
+        return "", OK
+    proxy = slack_broker.proxy(helper) or {}
+    if not proxy:
+        return "", OK
+    host = proxy.get("proxy_url") or ""
+    if not str(host).strip():
+        helper.log_error(PROXY_HOST_EMPTY)
+        return "", ERROR_CODE_VALIDATION_FAILED
+    port = proxy.get("proxy_port")
+    if port is None or not str(port).strip().isdigit():
+        helper.log_error(PROXY_PORT_NOT_A_NUMBER)
+        return "", ERROR_CODE_VALIDATION_FAILED
+    scheme = proxy.get("proxy_type") or "http"
+    auth = ""
+    if proxy.get("proxy_username"):
+        auth = "%s:%s@" % (
+            quote(proxy["proxy_username"], safe=""),
+            quote(proxy.get("proxy_password", ""), safe=""),
+        )
+    return "%s://%s%s:%s" % (scheme, auth, host, str(port).strip()), OK
 
 
 def _format_template(template_key, config, payload, fallback=""):
@@ -198,7 +211,9 @@ def _post(helper, url, data, headers, proxy_uri):
 
 def _send_slack_message(helper, config, message):
     body = json.dumps(message)
-    proxy_uri = _proxy_uri(helper, config)
+    proxy_uri, proxy_status = _proxy_uri(helper, config)
+    if proxy_status != OK:
+        return proxy_status
 
     token = config.get("slack_app_oauth_token_override") or config.get(
         "slack_app_oauth_token"
@@ -262,7 +277,15 @@ def process_event(helper, *args, **kwargs):
         except Exception:
             pass
 
-        config = _build_config(helper)
+        try:
+            config = _build_config(helper)
+        except slack_broker.BrokerError as exc:
+            helper.log_error(
+                "Slack settings broker call failed status=%s correlation_id=%s"
+                % (exc.status, exc.correlation_id or "none")
+            )
+            return ERROR_CODE_BROKER_UNAVAILABLE
+
         search_name = helper.search_name
         payload = {
             "configuration": dict(config),
