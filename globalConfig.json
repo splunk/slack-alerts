@@ -3,7 +3,7 @@
         "name": "slack_alerts",
         "displayName": "Slack Alerts",
         "restRoot": "slack_alerts",
-        "version": "3.0.0",
+        "version": "3.1.0",
         "schemaVersion": "0.0.10",
         "supportedThemes": [
             "light",

@@ -1,6 +1,6 @@
 [project]
 name = "slack-alerts"
-version = "3.0.0"
+version = "3.1.0"
 description = "Slack alert action for Splunk (dev tooling)"
 requires-python = ">=3.9,<3.14"
 
