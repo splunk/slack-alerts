@@ -15,7 +15,7 @@ jobs:
               with:
                   python-version: "3.13"
             - name: Install build tooling
-              run: pip install splunk-add-on-ucc-framework splunk-appinspect
+              run: pip install 'splunk-add-on-ucc-framework==6.5.3' splunk-appinspect
             - name: Build add-on
               run: |
                   VERSION=$(python -c "import json; print(json.load(open('globalConfig.json'))['meta']['version'])")
@@ -31,6 +31,9 @@ jobs:
                   splunk-appinspect inspect slack_alerts-*.tar.gz \
                       --mode precert \
                       --included-tags cloud \
+                      --included-tags private_app \
+                      --included-tags private_victoria \
+                      --included-tags private_classic \
                       --ci
                   code=$?
                   set -e

@@ -7,7 +7,7 @@ requires-python = ">=3.9,<3.14"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["*_tests.py", "test_*.py"]
-pythonpath = ["package/bin"]
+pythonpath = ["package/bin", "."]
 
 [tool.black]
 extend-exclude = "output"
