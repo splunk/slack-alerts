@@ -21,6 +21,7 @@ package/
     safe_fmt.py            Safe string template formatter
   default/
     authorize.conf         read_slack_alerts_credential and the slack_alert_action role
+    props.conf             slack_alerts:log sourcetype and parsing for the app's logs
   lib/requirements.txt     Python deps vendored into the build
   static/                  App icons
   appserver/static/        Alert action icon (slack.png)
@@ -34,7 +35,7 @@ an anchor or file it needs is missing:
 
 - `default/alert_actions.conf`: the alert token params
 - `default/restmap.conf`: the broker's `[script:slack_credential]` stanza
-- `bin/slack.py`: the results-file and log-level overrides
+- `bin/slack.py`: the log file name (`slack_alerts_alert.log`), log-level, and results-file overrides
 
 Do not hand-edit anything under `output/` - every build regenerates it.
 
@@ -52,7 +53,7 @@ Both CI workflows pin the generator to `splunk-add-on-ucc-framework==6.5.3`. Kee
 ## Build
 
 ```sh
-PYENV_VERSION="app-toolkit:3.13.7" ucc-gen build --source package --ta-version 3.1.0
+PYENV_VERSION="app-toolkit:3.13.7" ucc-gen build --source package --ta-version 3.1.1
 PYENV_VERSION="app-toolkit:3.13.7" ucc-gen package --path output/slack_alerts
 ```
 
@@ -62,7 +63,7 @@ upload to Splunk or Splunkbase. Both are gitignored.
 ## Validate (Splunk Cloud Platform tags)
 
 ```sh
-PYENV_VERSION="app-toolkit:3.13.7" splunk-appinspect inspect slack_alerts-3.1.0.tar.gz \
+PYENV_VERSION="app-toolkit:3.13.7" splunk-appinspect inspect slack_alerts-3.1.1.tar.gz \
   --mode precert --included-tags cloud \
   --included-tags private_app --included-tags private_victoria --included-tags private_classic
 ```

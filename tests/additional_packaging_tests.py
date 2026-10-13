@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -353,9 +354,10 @@ class AlertOverrideTests(unittest.TestCase):
 
 
 class AlertInjectionTests(PackagingTestCase):
-    def test_all_three_overrides_land(self):
+    def test_all_overrides_land(self):
         self.run_cleanup()
         text = self.read(self.alert)
+        self.assertIn("    def _logger_name(self):", text)
         self.assertIn("    def get_log_level(self):", text)
         self.assertIn("    def get_events(self):", text)
         self.assertIn("    def prepare_meta_for_cam(self):", text)
@@ -419,6 +421,7 @@ class AlertIdempotencyTests(PackagingTestCase):
         self.run_cleanup()
         twice = self.read(self.alert)
         self.assertEqual(once, twice)
+        self.assertEqual(twice.count("def _logger_name(self"), 2)
         self.assertEqual(twice.count("def get_events(self):"), 1)
         self.assertEqual(twice.count("def prepare_meta_for_cam(self):"), 1)
         self.assertEqual(twice.count(additional_packaging.ALERT_MARKER), 1)
@@ -481,11 +484,16 @@ class AlertFailLoudTests(PackagingTestCase):
         self.assertNotIn("def get_log_level", self.read(self.alert))
 
 
+CIM_MODACTION_SOURCE = re.compile(r"^.*[\\/](.+)_mod(?:alert|workflow).log$")
+
+
 class FakeModularAlertBase(object):
     def __init__(self, ta_name, alert_name):
         self.ta_name = ta_name
         self.alert_name = alert_name
         self.results_file = None
+        self._logger_name = alert_name + "_modalert"
+        self.requested_logger = self._logger_name
 
     def prepare_meta_for_cam(self):
         return BASE_META
@@ -551,6 +559,24 @@ class InjectedOverrideTests(PackagingTestCase):
         worker = self.worker()
         worker.results_file = os.path.join(self.output_directory, "missing.csv.gz")
         self.assertEqual(list(worker.get_events()), [])
+
+    def test_the_alert_logs_to_slack_alerts_alert(self):
+        self.assertEqual(self.worker().requested_logger, "slack_alerts_alert")
+
+    def test_the_alert_log_escapes_the_cim_modaction_routing(self):
+        path = "/opt/splunk/var/log/splunk/%s.log" % self.worker().requested_logger
+        self.assertIsNone(CIM_MODACTION_SOURCE.match(path))
+
+    def test_the_cim_routing_pattern_claims_the_framework_default(self):
+        self.assertIsNotNone(
+            CIM_MODACTION_SOURCE.match("/opt/splunk/var/log/splunk/slack_modalert.log")
+        )
+
+    def test_the_logger_name_holds_when_the_generated_class_is_renamed(self):
+        worker = self.worker(
+            SLACK_PY.replace("AlertActionWorkerslack", "AlertActionWorker")
+        )
+        self.assertEqual(worker.requested_logger, "slack_alerts_alert")
 
 
 class SourceTreeTests(unittest.TestCase):

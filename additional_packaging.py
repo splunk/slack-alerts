@@ -25,6 +25,14 @@ python.required       = 3.9, 3.13
 RESTMAP_ANCHOR = "[admin_external:slack_alerts_settings]"
 
 ALERT_OVERRIDES = """
+    @property
+    def _logger_name(self):
+        return "slack_alerts_alert"
+
+    @_logger_name.setter
+    def _logger_name(self, _framework_default):
+        pass
+
     def get_log_level(self):
         try:
             import slack_broker

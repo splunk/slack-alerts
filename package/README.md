@@ -17,7 +17,7 @@ Without it, the owner's alerts fail with exit code 7.
 ## Troubleshooting exit code 7
 
 Splunk logs `Alert action script returned error code=7` when the settings read fails. Search
-`slack_modalert.log` for:
+`slack_alerts_alert.log` for:
 
 ```text
 Slack settings broker call failed
@@ -42,7 +42,7 @@ curl -sk -o /dev/null -w '%{http_code}\n' -u <user> \
 On Splunk Cloud Platform, run this search and read `status` from the result:
 
 ```spl
-index=_internal source=*slack_modalert.log "Slack settings broker call failed"
+index=_internal source=*slack_alerts_alert.log "Slack settings broker call failed"
 ```
 
 ## Troubleshooting `No Slack App OAuth token or webhook URL configured.`
